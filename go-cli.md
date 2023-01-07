@@ -3,3 +3,6 @@
 
 # Install Gin
 > go get github.com/gin-gonic/gin
+
+# Install packages in repo
+> go get download
