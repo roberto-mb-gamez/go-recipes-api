@@ -5,4 +5,4 @@
 > git push origin develop
 
 # Remove branch
-> git branch --delete <branchname>
+> git branch -D <branchname>
