@@ -6,3 +6,13 @@
 
 # Install packages in repo
 > go get download
+
+# Setup Env (Windows - Powershell)
+> Set-Variable "$env:MONGO_URI" "mongodb://admin:password@localhost:27017/test?authSource=admin"
+> Set-Variable "$env:MONGO_DATABASE" demo
+
+# Setup Env (Windows - CMD)
+> set MONGO_URI=mongodb://admin:password@localhost:27017/test?authSource=admin
+> set MONGO_DATABASE=demo
+
+> go run main.go 
