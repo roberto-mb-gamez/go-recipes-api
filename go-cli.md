@@ -14,5 +14,9 @@
 # Setup Env (Windows - CMD)
 > set MONGO_URI=mongodb://admin:password@localhost:27017/test?authSource=admin
 > set MONGO_DATABASE=demo
-
 > go run main.go 
+
+# Setup env variables (Windows - Powershell)
+> $env:MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin"
+> $env:MONGO_DATABASE="demo"
+> go run . 
