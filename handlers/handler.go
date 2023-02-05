@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"recipes-api/models"
@@ -30,6 +31,16 @@ func NewRecipesHandler(ctx context.Context, collection *mongo.Collection, redisC
 		redisClient: redisClient,
 	}
 }
+
+// func AuthMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		if c.GetHeader("X-API-KEY") != os.Getenv("X_API_KEY") {
+// 			c.AbortWithStatus(401)
+// 		}
+
+// 		c.Next()
+// 	}
+// }
 
 // swagger:operation GET /recipes recipes listRecipes
 // Returns list of recipes
@@ -94,6 +105,14 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 //	'400':
 //	    description: Invalid input
 func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
+
+	if c.GetHeader("X-API-KEY") != os.Getenv("X_API_KEY") {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "API Key not provided or invalid",
+		})
+		return
+	}
+
 	var recipe models.Recipe
 	if err := c.ShouldBindJSON(&recipe); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

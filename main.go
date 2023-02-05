@@ -32,12 +32,12 @@ import (
 )
 
 var recipesHandler *handlers.RecipesHandler
+var authHandler *handlers.AuthHandler
 
 func init() {
 	// recipes = make([]Recipe, 0)
 	// file, _ := ioutil.ReadFile("recipes.json")
 	// _ = json.Unmarshal([]byte(file), &recipes)
-
 	ctx := context.Background()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 
@@ -57,6 +57,9 @@ func init() {
 
 	recipesHandler = handlers.NewRecipesHandler(ctx, collection, redisClient)
 
+	collectionUsers := client.Database(os.Getenv("MONGO_DATABASE")).Collection("users")
+	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
+
 	// var listOfRecipes []interface{}
 	// for _, recipe := range recipes {
 	// 	listOfRecipes = append(listOfRecipes, recipe)
@@ -74,12 +77,19 @@ func init() {
 
 func main() {
 	router := gin.Default()
-	router.POST("/recipes", recipesHandler.NewRecipeHandler)
+
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
-	router.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
-	router.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
-	router.GET("/recipes/:id", recipesHandler.GetOneRecipeHandler)
-	/*
-		router.GET("/recipes/search", SearchRecipesHandler)*/
+	router.POST("/signin", authHandler.SignInHandler)
+	router.POST("/refresh", authHandler.RefreshHandler)
+
+	authorized := router.Group("/")
+	authorized.Use(authHandler.AuthMiddleware())
+	{
+		authorized.POST("/recipes", recipesHandler.NewRecipeHandler)
+		authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
+		authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
+		router.GET("/recipes/:id", recipesHandler.GetOneRecipeHandler)
+	}
+
 	router.Run()
 }
