@@ -1,3 +1,26 @@
+// Recipes API
+//
+// This is a sample recipes API. You can find out more about the API at https://github.com/PacktPublishing/Building-Distributed-Applications-in-Gin.
+//
+// Schemes: http
+// Host: api.recipes.io:8080
+// BasePath: /
+// Version: 1.0.0
+// Contact: Mohamed Labouardy
+// <mohamed@labouardy.com> https://labouardy.com
+// SecurityDefinitions:
+// api_key:
+//
+//	type: apiKey
+//	name: Authorization
+//	in: header
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// swagger:meta
 package handlers
 
 import (
@@ -5,6 +28,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"recipes-api/models"
@@ -30,6 +54,16 @@ func NewRecipesHandler(ctx context.Context, collection *mongo.Collection, redisC
 		redisClient: redisClient,
 	}
 }
+
+// func AuthMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		if c.GetHeader("X-API-KEY") != os.Getenv("X_API_KEY") {
+// 			c.AbortWithStatus(401)
+// 		}
+
+// 		c.Next()
+// 	}
+// }
 
 // swagger:operation GET /recipes recipes listRecipes
 // Returns list of recipes
@@ -94,6 +128,14 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 //	'400':
 //	    description: Invalid input
 func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
+
+	if c.GetHeader("X-API-KEY") != os.Getenv("X_API_KEY") {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "API Key not provided or invalid",
+		})
+		return
+	}
+
 	var recipe models.Recipe
 	if err := c.ShouldBindJSON(&recipe); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

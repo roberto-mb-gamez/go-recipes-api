@@ -20,3 +20,15 @@
 > $env:MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin"
 > $env:MONGO_DATABASE="demo"
 > go run . 
+
+# Setup env variables (Windows - Powershell) and API Key
+> $env:MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin"
+> $env:MONGO_DATABASE="demo"
+> $env:X_API_KEY=eUbP9shywUygMx7u
+> go run .
+
+# Setup env variables (Windows - Powershell) and JWT
+> $env:MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin"
+> $env:MONGO_DATABASE="demo"
+> $env:JWT_SECRET="eUbP9shywUygMx7u"
+> go run .
