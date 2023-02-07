@@ -91,5 +91,9 @@ func main() {
 		router.GET("/recipes/:id", recipesHandler.GetOneRecipeHandler)
 	}
 
-	router.Run()
+	// HTTP
+	// router.Run()
+
+	// HTTPS
+	router.RunTLS(":443", "certs/localhost.crt", "certs/localhost.key")
 }
